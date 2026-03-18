@@ -1,61 +1,48 @@
+import java.util.*;
 
-    abstract class Room {
-        protected int numberOfBeds;
-        protected int squareFeet;
-        protected double pricePerNight;
+class Service{
+    private String serviceName;
+    private double cost;
 
-        Room(int numberOfBeds, int squareFeet, double pricePerNight){
-            this.numberOfBeds = numberOfBeds;
-            this.squareFeet = squareFeet;
-            this.pricePerNight = pricePerNight;
-        }
-        public void displayRoomDetails(){
-            System.out.println("Beds: " +numberOfBeds);
-            System.out.println("Size: " +squareFeet+ " sqft");
-            System.out.println("Price per Night: " +pricePerNight);
-        }
+    Service(String serviceName,double cost){
+        this.serviceName = serviceName;
+        this.cost = cost;
     }
-    class SingleRoom extends Room {
-        SingleRoom() {
-            super(1, 250, 1500.0);
-        }
-        public void displaySingleRoomDetails(){
-            System.out.println("Single Room: ");
-            super.displayRoomDetails();
-            System.out.println("Available: 5");
-        }
+    public String getServiceName(){
+        return serviceName;
     }
-    class DoubleRoom extends Room {
-        DoubleRoom(){
-            super(2, 400, 2500.0);
-        }
-        public void displayDoubleRoomDetails(){
-            System.out.println("Double Room: ");
-            super.displayRoomDetails();
-            System.out.println("Available: 3");
-        }
+    public double getCost(){
+        return cost;
+    }
+}
 
+class AddOnServiceManager{
+    private Map<String, List<Service>> servicesByReservation;
+
+    AddOnServiceManager(){
+        servicesByReservation = new HashMap<>();
     }
-    class SuiteRoom extends Room {
-        SuiteRoom(){
-            super(3, 750, 5000.0);
-        }
-        public void displaySuiteRoomDetails(){
-            System.out.println("Suite Room: ");
-            super.displayRoomDetails();
-            System.out.println("Available: 2");
-        }
+    public void addService(String reservationId, Service service){
+        servicesByReservation.computeIfAbsent(reservationId,k->new ArrayList<>()).add(service);
     }
-    public class HotelBookingApp {
+    public double calculateTotalServiceCost(String reservationId){
+        double sum = 0;
+        List<Service> service = servicesByReservation.get(reservationId);
+        for(Service s : service){
+            sum += s.getCost();
+        }
+        return sum;
+    }
+}
+public class HotelBookingApp{
     public static void main(String[] args){
-        System.out.println("Hotel Room Initialization");
-        SingleRoom s1 = new SingleRoom();
-        s1.displaySingleRoomDetails();
-        System.out.println();
-        DoubleRoom d1 = new DoubleRoom();
-        d1.displayDoubleRoomDetails();
-        System.out.println();
-        SuiteRoom s2 = new SuiteRoom();
-        s2.displaySuiteRoomDetails();
+        System.out.println("Add-On Service Selection");
+
+        AddOnServiceManager reservation = new AddOnServiceManager();
+        reservation.addService("Single-1",new Service("Food",1000));
+        reservation.addService("Single-1",new Service("Spa",500));
+
+        System.out.println("Reservation ID: Single-1");
+        System.out.println("Total Add-On Cost: " +reservation.calculateTotalServiceCost("Single-1"));
     }
 }
