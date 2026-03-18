@@ -31,7 +31,7 @@ class SuiteRoom extends Room{
     }
 }
 class RoomInventory{
-    private Map<String,Integer> roomAvailability;
+    private final Map<String,Integer> roomAvailability;
     public RoomInventory(){
         this.roomAvailability=new HashMap<>();
         this.initializeInventory();
@@ -69,8 +69,8 @@ class RoomSearchService{
     }
 }
 class Reservation{
-    private String guestName;
-    private String roomType;
+    private final String guestName;
+    private final String roomType;
     public Reservation(String guestName, String roomType){
         this.guestName=guestName;
         this.roomType=roomType;
@@ -83,7 +83,7 @@ class Reservation{
     }
 }
 class BookingRequestQueue{
-    private Queue<Reservation> requestQueue;
+    private final Queue<Reservation> requestQueue;
     public BookingRequestQueue(){
         requestQueue=new LinkedList<>();
     }
@@ -139,7 +139,7 @@ class RoomAllocationService{
     }
 }
 public class HotelBookingApp{
-    public static void main(String[] args){
+    static void main(String[] args){
         System.out.println("Room Allocation Processing");
         BookingRequestQueue bookingQueue=new BookingRequestQueue();
         RoomInventory inventory=new RoomInventory();
