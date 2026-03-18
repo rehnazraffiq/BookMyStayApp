@@ -1,61 +1,58 @@
+import java.util.*;
 
-    abstract class Room {
-        protected int numberOfBeds;
-        protected int squareFeet;
-        protected double pricePerNight;
+class Reservation{
+    private String guestName;
+    private String roomType;
 
-        Room(int numberOfBeds, int squareFeet, double pricePerNight){
-            this.numberOfBeds = numberOfBeds;
-            this.squareFeet = squareFeet;
-            this.pricePerNight = pricePerNight;
-        }
-        public void displayRoomDetails(){
-            System.out.println("Beds: " +numberOfBeds);
-            System.out.println("Size: " +squareFeet+ " sqft");
-            System.out.println("Price per Night: " +pricePerNight);
-        }
+    Reservation(String guestName,String roomType){
+        this.guestName = guestName;
+        this.roomType = roomType;
     }
-    class SingleRoom extends Room {
-        SingleRoom() {
-            super(1, 250, 1500.0);
-        }
-        public void displaySingleRoomDetails(){
-            System.out.println("Single Room: ");
-            super.displayRoomDetails();
-            System.out.println("Available: 5");
-        }
+    public String getGuestName(){
+        return guestName;
     }
-    class DoubleRoom extends Room {
-        DoubleRoom(){
-            super(2, 400, 2500.0);
-        }
-        public void displayDoubleRoomDetails(){
-            System.out.println("Double Room: ");
-            super.displayRoomDetails();
-            System.out.println("Available: 3");
-        }
+    public String getRoomType(){
+        return roomType;
+    }
+}
+class BookingHistory{
+    private List<Reservation> confirmedReservations;
 
+    BookingHistory(){
+        confirmedReservations = new ArrayList<>();
     }
-    class SuiteRoom extends Room {
-        SuiteRoom(){
-            super(3, 750, 5000.0);
-        }
-        public void displaySuiteRoomDetails(){
-            System.out.println("Suite Room: ");
-            super.displayRoomDetails();
-            System.out.println("Available: 2");
+    public void addReservation(Reservation reservation){
+        confirmedReservations.add(reservation);
+    }
+    public List<Reservation> getConfirmedReservations(){
+        return confirmedReservations;
+    }
+}
+class BookingReportService{
+    public void generateReport(BookingHistory history){
+        System.out.println("Booking History Report");
+
+        List<Reservation> list = history.getConfirmedReservations();
+        for(Reservation r : list){
+            System.out.println("Guest: " +r.getGuestName()+ " ,RoomType: " +r.getRoomType());
         }
     }
-    public class HotelBookingApp {
+}
+public class HotelBookingApp{
     public static void main(String[] args){
-        System.out.println("Hotel Room Initialization");
-        SingleRoom s1 = new SingleRoom();
-        s1.displaySingleRoomDetails();
+        System.out.println("Booking History and Reporting");
         System.out.println();
-        DoubleRoom d1 = new DoubleRoom();
-        d1.displayDoubleRoomDetails();
-        System.out.println();
-        SuiteRoom s2 = new SuiteRoom();
-        s2.displaySuiteRoomDetails();
+        BookingHistory history = new BookingHistory();
+        BookingReportService service = new BookingReportService();
+
+        Reservation r1 = new Reservation("Abhi","Single");
+        Reservation r2 = new Reservation("Subha","Double");
+        Reservation r3 = new Reservation("Vanmathi","Suite");
+
+        history.addReservation(r1);
+        history.addReservation(r2);
+        history.addReservation(r3);
+
+        service.generateReport(history);
     }
 }
