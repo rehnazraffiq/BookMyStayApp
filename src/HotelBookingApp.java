@@ -1,53 +1,62 @@
-import java.util.Queue;
-import java.util.LinkedList;
-class Reservation{
-    private String guestName;
-    private String roomType;
+import java.util.*;
+class RoomInventory {
+    private Map<String, Integer> roomAvailability;
 
-    Reservation(String guestName,String roomType){
-        this.guestName = guestName;
-        this.roomType = roomType;
+    RoomInventory() {
+        roomAvailability = new HashMap<>();
+        roomAvailability.put("Single Room", 6);
     }
-    public String getGuestName(){
-        return guestName;
+
+    public void addRoom(String type) {
+        roomAvailability.put(type, roomAvailability.getOrDefault(type, 0) + 1);
     }
-    public String getRoomType(){
-        return roomType;
+
+    public void showRooms() {
+        System.out.println("Updated Single Room Availablitiy: " + roomAvailability.get("Single Room"));
     }
 }
-class BookingRequestQueue{
-    private Queue<Reservation> requestQueue;
+class CancellationService{
+    private Stack<String> releaseRoomIDs;
+    private Map<String, String> reservationRoomTypeMap;
 
-    BookingRequestQueue(){
-        requestQueue = new LinkedList<>();
+    CancellationService(){
+        releaseRoomIDs = new Stack<>();
+        reservationRoomTypeMap = new HashMap<>();
     }
-    public void addRequest(Reservation reservation){
-        requestQueue.offer(reservation);
+    public void registerBooking(String reservationId, String roomType){
+        reservationRoomTypeMap.put(reservationId,roomType);
     }
-    public Reservation getNextRequest(){
-        return requestQueue.poll();
+    public void cancelBooking(String reservationId, RoomInventory inventory){
+        if(!reservationRoomTypeMap.containsKey(reservationId)){
+            System.out.println("Invalid reservation Id");
+            return;
+        }
+        String roomType = reservationRoomTypeMap.remove(reservationId);
+        inventory.addRoom(roomType);
+        releaseRoomIDs.push(reservationId);
+        System.out.println("Booking cancelled successfully.Inventory restored for room type: " +roomType);
     }
-    public boolean hasPendingRequests(){
-        return !requestQueue.isEmpty();
+    public void showRollBackHistory(){
+        System.out.print("Released Room IDs: ");
+        while(!releaseRoomIDs.isEmpty()){
+            System.out.println(releaseRoomIDs.pop());
+        }
     }
 }
 public class HotelBookingApp{
     public static void main(String[] args){
-        System.out.println("Booking Request Queue");
+        RoomInventory inventory = new RoomInventory();
+        CancellationService service = new CancellationService();
 
-        BookingRequestQueue bookingQueue = new BookingRequestQueue();
+        service.registerBooking("Single-1","Single");
 
-        Reservation r1 = new Reservation("Abhi","Single");
-        Reservation r2 = new Reservation("Subha","Double");
-        Reservation r3 = new Reservation("Vanmathi","Suite");
+        System.out.println("Booking cancellation");
+        service.cancelBooking("Single-1",inventory);
 
-        bookingQueue.addRequest(r1);
-        bookingQueue.addRequest(r2);
-        bookingQueue.addRequest(r3);
+        System.out.println("\nRollBack History (Most Recent First): ");
+        service.showRollBackHistory();
+        System.out.println();
 
-        while(bookingQueue.hasPendingRequests()){
-            Reservation request = bookingQueue.getNextRequest();
-            System.out.println("Processing booking for Guest: " +request.getGuestName()+ ",Room Type: " + request.getRoomType());
-        }
+        inventory.showRooms();
     }
 }
